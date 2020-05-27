@@ -1,0 +1,31 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: elastalert
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: elastalert
+  template:
+    metadata:
+      labels:
+        name: elastalert      
+    spec:
+      volumes:
+      - name: rules
+        configMap:
+          name: elastalert-rules
+      - name: config
+        configMap:
+          name: elastalert-config
+      containers:
+      - image: landscapecl/elastalert:v0.2.4
+        name: elastalert 
+        imagePullPolicy: Always
+        volumeMounts:
+        - mountPath: /opt/elastalert/alert_rules/
+          name: rules
+        - mountPath: /opt/config/elastalert_config.yaml
+          name: config
+          subPath: elastalert_config.yaml
